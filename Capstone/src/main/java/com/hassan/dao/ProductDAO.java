@@ -4,6 +4,8 @@ import com.hassan.model.Product;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductDAO {
 
@@ -11,10 +13,11 @@ public class ProductDAO {
     private String jdbcUsername = "root";
     private String jdbcPassword = "";
 
-    private static final String INSERT_PRODUCT_SQL = "INSERT INTO product" + " (sku,name,description,unit_price,image_url,active,units_in_stock,date_created,last_updated)" +
-            " VALUES (?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_PRODUCT_SQL = "INSERT INTO product" + " (sku,name,description,unitPrice,imageUrl,active,unitsInStock,dateCreated,lastUpdated,categoryId)" +
+            " VALUES (?,?,?,?,?,?,?,?,?,?);";
     private static final String SELECT_PRODUCT_BY_ID = "SELECT * FROM product WHERE id =?";
 
+    private static final String SELECT_ALL_PRODUCT = "SELECT * FROM product;";
 
     public ProductDAO() {}
 
@@ -77,6 +80,35 @@ public class ProductDAO {
         return product;
     }
 
+
+    public List<Product> selectProductList(){
+        List <Product> products = new ArrayList<>();
+
+        try (Connection connection = getConnection();PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PRODUCT)){
+
+            System.out.println(preparedStatement);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String sku = rs.getString("sku");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                BigDecimal unitPrice = BigDecimal.valueOf(rs.getInt("unitPrice"));
+                String imageUrl = rs.getString("imageUrl");
+                boolean active = rs.getBoolean("active");
+                int unitsInStock = rs.getInt("unitsInStock");
+                Date dateCreated = rs.getDate("dateCreated");
+                Date lastUpdated = rs.getDate("lastUpdated");
+                int categoryId = rs.getInt("categoryId");
+                products.add(new Product(id,sku,name,description,unitPrice,imageUrl,active,unitsInStock,dateCreated,lastUpdated,categoryId));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return products;
+    }
 
 
 

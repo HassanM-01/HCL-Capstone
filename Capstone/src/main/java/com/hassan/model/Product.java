@@ -24,5 +24,6 @@ public class Product {
     private int unitsInStock;
     private Date dateCreated;
     private Date lastUpdated;
+    private long categoryId;
 
 }
